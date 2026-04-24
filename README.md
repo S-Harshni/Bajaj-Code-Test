@@ -1,74 +1,76 @@
-# SRM BFHL Challenge (Single-Link Deployment)
+# SRM BFHL Challenge - Single Link Deployment
 
-This repo is cleaned to deploy as one link on Vercel:
+This project is cleaned to run as one hosted app with:
 
-- Frontend: `/`
-- API endpoint: `POST /bfhl`
+- frontend at `/`
+- API at `POST /bfhl`
 
-The API implements the hierarchy rules from the SRM challenge, including:
-
-- strict edge validation (`X->Y`, uppercase single letters)
-- invalid entry collection
-- duplicate edge tracking (unique duplicate list)
-- first-parent-wins handling for multi-parent children
-- cycle detection by connected component
-- tree depth and summary generation
-
-## Identity Fields Used
+## Identity Fields
 
 - `user_id`: `khushalnarsaria_13072006`
 - `email_id`: `kn4379@srmist.edu.in`
 - `college_roll_number`: `RA2311026010175`
 
-If needed, set env vars on Vercel to override:
+You can override these via env vars:
 
 - `BFHL_USER_ID`
 - `BFHL_EMAIL_ID`
 - `BFHL_ROLL_NUMBER`
 
-## Project Structure
+## Structure
 
 ```txt
-api/bfhl.js              # Vercel serverless API handler
-lib/bfhlProcessor.js     # Core hierarchy processing logic
-index.html               # Frontend page
-app.js                   # Frontend behavior
-App.css                  # Frontend styles
+server.js                  # single Node server for frontend + /bfhl
+index.html                 # frontend page
+app.js                     # frontend logic
+App.css                    # frontend styling
+lib/bfhlProcessor.js       # hierarchy algorithm
+api/bfhl.js                # optional Vercel serverless handler
 tests/bfhlProcessor.test.js
-vercel.json              # rewrite /bfhl -> /api/bfhl
+vercel.json
 ```
 
-## Local Validation
+## Local Run
 
 ```bash
 npm install
 npm test
+npm start
 ```
 
-## Deploy (One Link)
+Open `http://localhost:5000`
 
-1. Push this repo to GitHub (public).
-2. Go to Vercel and import the repo.
-3. Framework preset: `Other` (or leave auto-detect).
-4. Build command: leave empty.
-5. Output directory: leave empty.
-6. Deploy.
+## Render Deployment (Single Link)
 
-After deploy:
+1. Push repo to GitHub (public).
+2. In Render: `New` -> `Web Service` -> connect repo.
+3. Use these settings:
+   - Root Directory: leave empty
+   - Build Command: `npm install`
+   - Start Command: `npm start`
+4. Deploy.
 
-- frontend URL: `https://your-project.vercel.app`
-- API URL for submission: `https://your-project.vercel.app/bfhl`
+After deploy, both URLs are on the same domain:
 
-## Quick API Test
+- frontend: `https://your-service.onrender.com`
+- API: `https://your-service.onrender.com/bfhl`
 
-```bash
-curl -X POST https://your-project.vercel.app/bfhl \
-  -H "Content-Type: application/json" \
-  -d "{\"data\":[\"A->B\",\"A->C\",\"B->D\"]}"
-```
+## Important Fix for Your Current Render Error
 
-## Submission Fields
+If your existing service still has:
 
-1. Hosted API base URL: `https://your-project.vercel.app`
-2. Hosted frontend URL: `https://your-project.vercel.app`
-3. Public GitHub repo URL
+- build command: `cd backend && npm install`
+- start command: `cd backend && npm start`
+
+change them to:
+
+- `npm install`
+- `npm start`
+
+Then click `Manual Deploy` -> `Deploy latest commit`.
+
+## Submission Values
+
+1. Hosted API base URL: `https://your-service.onrender.com`
+2. Hosted frontend URL: `https://your-service.onrender.com`
+3. GitHub repo URL
