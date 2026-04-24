@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SRM BFHL Hierarchy API</title>
+    <link rel="stylesheet" href="./App.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <h1 class="title">SRM Full Stack Challenge - BFHL</h1>
+      <p class="subtitle">
+        Enter edges in CSV/newline style or as a JSON array, then submit to
+        <code>/bfhl</code>.
+      </p>
+
+      <section class="panel">
+        <div class="row">
+          <div>
+            <label for="entryInput">Node entries</label>
+            <textarea id="entryInput" spellcheck="false">A->B
+A->C
+B->D
+C->E
+E->F
+X->Y
+Y->Z
+Z->X
+P->Q
+Q->R
+G->H
+G->H
+G->I
+hello
+1->2
+A-></textarea>
+            <p class="help">
+              Examples: <code>A-&gt;B</code>, <code>A-&gt;C</code> or
+              <code>["A-&gt;B","A-&gt;C"]</code>
+            </p>
+            <div class="actions">
+              <button id="submitBtn" class="primary-btn" type="button">
+                Submit
+              </button>
+              <button id="resetBtn" class="secondary-btn" type="button">
+                Reset
+              </button>
+            </div>
+            <div id="statusBox"></div>
+          </div>
+          <div>
+            <label for="rawResponse">Raw response</label>
+            <pre id="rawResponse">No response yet.</pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div id="resultRoot" class="result-grid"></div>
+      </section>
+    </main>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "name": "bajaj-bfhl",
+  "version": "1.0.0",
+  "description": "SRM Full Stack Engineering Challenge - Single-link frontend + /bfhl API",
+  "main": "api/bfhl.js",
+  "scripts": {
+    "test": "node --test"
+  },
+  "keywords": ["bfhl", "hierarchical", "tree", "api", "vercel"],
+  "author": "Khushal Narsaria",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  }
+}
