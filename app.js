@@ -7,16 +7,34 @@ const rawResponse = document.getElementById("rawResponse");
 
 const defaultInput = entryInput.value;
 
-// Get API URL - for production, change to your backend URL
+// API URL: same-origin /bfhl (Express locally, Vercel rewrite in production) unless a
+// BACKEND_URL is configured via localStorage or window.BACKEND_URL.
 function getApiUrl() {
-  if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
-    return "/bfhl";
+  return localStorage.getItem("BACKEND_URL") || window.BACKEND_URL || "/bfhl";
+}
+
+// Call the API; on a static host with no /bfhl endpoint, fall back to the same processor
+// running in the browser (lib/bfhlProcessor.js exposes window.BfhlProcessor).
+async function callApi(entries) {
+  try {
+    const response = await fetch(getApiUrl(), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ data: entries }),
+    });
+    const type = response.headers.get("content-type") || "";
+    if (type.includes("application/json")) {
+      return { ok: response.ok, payload: await response.json(), source: "API" };
+    }
+  } catch (error) {
+    // network error: fall through to local processing
   }
-  // For deployed frontend, use environment variable or construct from hostname
-  const backendUrl = localStorage.getItem("BACKEND_URL") || 
-                     window.BACKEND_URL || 
-                     `${window.location.protocol}//api-${window.location.host.split('.')[0]}.${window.location.host.split('.').slice(1).join('.')}/bfhl`;
-  return backendUrl;
+  if (!window.BfhlProcessor) throw new Error("Unable to reach the /bfhl API.");
+  try {
+    return { ok: true, payload: window.BfhlProcessor.processHierarchyData(entries), source: "browser" };
+  } catch (error) {
+    return { ok: false, payload: { error: error.message }, source: "browser" };
+  }
 }
 
 function setStatus(type, text) {
@@ -142,24 +160,17 @@ async function submit() {
 
   try {
     const entries = parseInput(entryInput.value);
-    const apiUrl = getApiUrl();
-    const response = await fetch(apiUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ data: entries }),
-    });
-
-    const payload = await response.json();
+    const { ok, payload, source } = await callApi(entries);
     rawResponse.textContent = JSON.stringify(payload, null, 2);
 
-    if (!response.ok) {
+    if (!ok) {
       setStatus("error", payload.error || "Request failed.");
       resultRoot.innerHTML = "";
       return;
     }
 
     renderResponse(payload);
-    setStatus("ok", "API call successful.");
+    setStatus("ok", source === "API" ? "API call successful." : "Processed in the browser (static demo, same logic as POST /bfhl).");
   } catch (error) {
     rawResponse.textContent = "No response due to error.";
     resultRoot.innerHTML = "";
